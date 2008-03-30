@@ -5,7 +5,14 @@ use Moose;
 
 use Scalar::Util qw(looks_like_number reftype blessed);
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
+
+extends qw(
+	Moose::Object
+	Exporter
+);
+
+our @EXPORT_OK = qw(dump warn $default_dumper);
 
 has max_length => (
 	isa => "Int",
@@ -41,12 +48,41 @@ has pairs => (
 	default => 1,
 );
 
+sub warn {
+	my ( @args ) = @_;
+	my $self;
+
+	if ( blessed($args[0]) and $args[0]->isa(__PACKAGE__) ) {
+		$self = shift @args;
+	} else {
+		$self = our $default_dumper;
+	}
+
+	require Carp;
+
+	Carp::carp(
+		join $,,
+		map {
+			!ref($_) && defined($_)
+				? $_
+				: $self->dump($_)
+		} @args
+	);
+}
+
 sub dump {
-	my ( $self, @what ) = @_;
+	my ( @args ) = @_;
+	my $self;
 
-	my $method = "dump_as_" . ( $self->should_dump_as_pairs(@what) ? "pairs" : "list" );
+	if ( blessed($args[0]) and $args[0]->isa(__PACKAGE__) ) {
+		$self = shift @args;
+	} else {
+		$self = our $default_dumper;
+	}
 
-	my $dump = $self->$method(1, @what);
+	my $method = "dump_as_" . ( $self->should_dump_as_pairs(@args) ? "pairs" : "list" );
+
+	my $dump = $self->$method(1, @args);
 
 	if ( $self->has_max_length ) {
 		if ( length($dump) > $self->max_length ) {
@@ -55,7 +91,7 @@ sub dump {
 	}
 
 	if ( not defined wantarray ) {
-		warn "$dump\n";
+		CORE::warn "$dump\n";
 	} else {
 		return $dump;
 	}
@@ -160,6 +196,11 @@ sub format_hash {
 	return "{ " . $self->dump_as_pairs($depth + 1, %$hash) . " }";
 }
 
+sub format_scalar {
+	my ( $self, $depth, $scalar ) = @_;
+	return "\\" . $self->format($depth + 1, $$scalar);
+}
+
 sub format_object {
 	my ( $self, $depth, $object ) = @_;
 	$self->stringify ? "$object" : overload::StrVal($object)
@@ -192,6 +233,7 @@ sub format_number {
 	return "$value";
 }
 
+our $default_dumper = __PACKAGE__->new;
 
 __PACKAGE__
 
@@ -212,11 +254,27 @@ printing.
 		print "foo called with args: " . Devel::PartialDump->new->dump(@_);
 	}
 
+	use Devel::PartialDump qw(warn);
+
+	# warn is overloaded to create a concise dump instead of stringifying $some_bad_data
+	warn "this made a boo boo: ", $some_bad_data
+
 =head1 DESCRIPTION
 
 This module is a data dumper optimized for logging of arbitrary parameters.
 
-It attempts to truncate overly verbose data, be 
+It attempts to truncate overly verbose data, in a way that is hopefully more
+useful for diagnostics warnings than
+
+	warn Dumper(@stuff);
+
+Unlike other data dumping modules there are no attempts at correctness or cross
+referencing, this is only meant to provide a slightly deeper look into the data
+in question.
+
+There is a default recursion limit, and a default truncation of long lists, and
+the dump is formatted on one line (new lines in strings are escaped), to aid in
+readability.
 
 =head1 ATTRIBUTES
 
@@ -258,13 +316,59 @@ list.
 
 =back
 
+=head1 EXPORTS
+
+All exports are optional, nothing is exported by default.
+
+=over 4
+
+=item warn
+
+=item dump
+
+See the C<warn> and C<dump> methods.
+
+These methods will use C<$Devel::PartialDump::default_dumper> as the invocant if the
+first argument is not blessed and C<isa> L<Devel::PartialDump>, so they can be
+used as functions too.
+
+Particularly C<warn> can be used as a drop in replacement for the built in
+warn:
+
+	warn "blah blah: ", $some_data;
+
+by importing
+
+	use Devel::PartialDump qw(warn);
+
+C<$some_data> will be have some of it's data dumped.
+
+=item $default_dumper
+
+The default dumper object to use for export style calls.
+
+Can be assigned to to alter behavior globally.
+
+This is generally useful when using the C<warn> export as a drop in replacement
+for C<CORE::warn>.
+
+=back
+
 =head1 METHODS
 
 =over 4
 
+=item warn
+
+A warpper for C<dump> that prints strings plainly.
+
 =item dump @stuff
 
 Returns a one line, human readable, concise dump of @stuff.
+
+If called in void context, will C<warn> with the dump.
+
+Truncates the dump according to C<max_length> if specified.
 
 =item dump_as_list $depth, @stuff
 
