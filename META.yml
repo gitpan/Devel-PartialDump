@@ -1,13 +1,13 @@
 --- #YAML:1.0
 name:                Devel-PartialDump
-version:             0.03
+version:             0.04
 abstract:            ~
 license:             ~
 author:              ~
 generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
-    Moose:                         0
+    Mouse:                         0
     namespace::clean:              0.08
     Scalar::Util:                  0
     Sub::Exporter:                 0
