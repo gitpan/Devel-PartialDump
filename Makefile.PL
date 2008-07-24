@@ -14,6 +14,8 @@ WriteMakefile(
 		'Test::use::ok' => 0,
 		'Moose' => 0,
 		'Scalar::Util' => 0,
+		'namespace::clean' => 0.08,
+		'Sub::Exporter' => 0,
 	},
 );
 

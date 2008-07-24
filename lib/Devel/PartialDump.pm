@@ -1,18 +1,22 @@
 #!/usr/bin/perl
 
 package Devel::PartialDump;
-use Moose;
+use Mouse qw(has meta); # no need for anything else
 
+use Carp ();
 use Scalar::Util qw(looks_like_number reftype blessed);
 
-our $VERSION = "0.02";
+use namespace::clean -except => 'meta';
 
-extends qw(
-	Moose::Object
-	Exporter
-);
+our $VERSION = "0.03";
 
-our @EXPORT_OK = qw(dump warn $default_dumper);
+use Sub::Exporter -setup => {
+	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
+	groups => {
+		easy => [qw(dump warn show show_scalar carp croak)],
+		carp => [qw(croak carp)],
+	},
+};
 
 has max_length => (
 	isa => "Int",
@@ -48,7 +52,42 @@ has pairs => (
 	default => 1,
 );
 
+has objects => (
+	isa => "Bool",
+	is  => "rw",
+	default => 1,
+);
+
+sub warn_str {
+	my ( @args ) = @_;
+	my $self;
+
+	if ( blessed($args[0]) and $args[0]->isa(__PACKAGE__) ) {
+		$self = shift @args;
+	} else {
+		$self = our $default_dumper;
+	}
+	return $self->_join(
+		map {
+			!ref($_) && defined($_)
+			? $_
+			: $self->dump($_)
+		} @args
+	);
+}
+
 sub warn {
+	Carp::carp(warn_str(@_));
+}
+
+foreach my $f ( qw(carp croak confess cluck) ) {
+	eval "sub $f {
+		local \$Carp::CarpLevel = \$Carp::CarpLevel + 1;
+		Carp::$f(warn_str(\@_));
+	}";
+}
+
+sub show {
 	my ( @args ) = @_;
 	my $self;
 
@@ -58,16 +97,33 @@ sub warn {
 		$self = our $default_dumper;
 	}
 
-	require Carp;
+	$self->warn(@args);
 
-	Carp::carp(
-		join $,,
-		map {
-			!ref($_) && defined($_)
-				? $_
-				: $self->dump($_)
-		} @args
-	);
+	return ( @args == 1 ? $args[0] : @args );
+}
+
+sub show_scalar ($) { goto \&show }
+
+sub _join {
+	my ( $self, @strings ) = @_;
+
+	my $ret = "";
+
+	if ( @strings ) {
+		my $sep = $, || $" || " ";
+		my $re = qr/(?: \s| \Q$sep\E )$/x;
+
+		my $last = pop @strings;
+
+		foreach my $string ( @strings ) {
+			$ret .= $string;
+			$ret .= $sep unless $string =~ $re;
+		}
+
+		$ret .= $last;
+	}
+
+	return $ret;
 }
 
 sub dump {
@@ -171,15 +227,15 @@ sub format_ref {
 	my ( $self, $depth, $ref ) = @_;
 
 	if ( $depth > $self->max_depth ) {
-		return "$ref";
+		return overload::StrVal($ref);
 	} else {
 		my $reftype = reftype($ref);
 		my $method = "format_" . lc reftype $ref;
 
 		if ( $self->can($method) ) {
-			$self->$method( $depth, $ref );
+			return $self->$method( $depth, $ref );
 		} else {
-			return "$ref";
+			return overload::StrVal($ref);
 		}
 	}
 }
@@ -187,23 +243,38 @@ sub format_ref {
 sub format_array {
 	my ( $self, $depth, $array ) = @_;
 
-	return "[ " . $self->dump_as_list($depth + 1, @$array) . " ]";
+	my $class = blessed($array) || '';
+	$class .= "=" if $class;
+
+	return $class . "[ " . $self->dump_as_list($depth + 1, @$array) . " ]";
 }
 
 sub format_hash {
 	my ( $self, $depth, $hash ) = @_;
 
-	return "{ " . $self->dump_as_pairs($depth + 1, %$hash) . " }";
+	my $class = blessed($hash) || '';
+	$class .= "=" if $class;
+
+	return $class . "{ " . $self->dump_as_pairs($depth + 1, map { $_ => $hash->{$_} } sort keys %$hash) . " }";
 }
 
 sub format_scalar {
 	my ( $self, $depth, $scalar ) = @_;
-	return "\\" . $self->format($depth + 1, $$scalar);
+
+	my $class = blessed($scalar) || '';
+	$class .= "=" if $class;
+
+	return $class . "\\" . $self->format($depth + 1, $$scalar);
 }
 
 sub format_object {
 	my ( $self, $depth, $object ) = @_;
-	$self->stringify ? "$object" : overload::StrVal($object)
+
+	if ( $self->objects ) {
+		return $self->format_ref($depth, $object);
+	} else {
+		return $self->stringify ? "$object" : overload::StrVal($object);
+	}
 }
 
 sub format_string {
@@ -276,6 +347,14 @@ There is a default recursion limit, and a default truncation of long lists, and
 the dump is formatted on one line (new lines in strings are escaped), to aid in
 readability.
 
+You can enable it temporarily by importing functions like C<warn>, C<croak> etc
+to get more informative errors during development, or even use it as:
+
+	BEGIN { local $@; eval "use Devel::PartialDump qw(...)" }
+
+to get DWIM formatting only if it's installed, without introducing a
+dependency.
+
 =head1 ATTRIBUTES
 
 =over 4
@@ -320,13 +399,27 @@ list.
 
 All exports are optional, nothing is exported by default.
 
+This module uses L<Sub::Exporter>, so exports can be renamed, curried, etc.
+
 =over 4
 
 =item warn
 
+=item show 
+
+=item show_scalar
+
+=item croak
+
+=item carp
+
+=item confess
+
+=item cluck
+
 =item dump
 
-See the C<warn> and C<dump> methods.
+See the various methods for behavior documentation.
 
 These methods will use C<$Devel::PartialDump::default_dumper> as the invocant if the
 first argument is not blessed and C<isa> L<Devel::PartialDump>, so they can be
@@ -358,9 +451,40 @@ for C<CORE::warn>.
 
 =over 4
 
-=item warn
+=item warn @blah
 
 A warpper for C<dump> that prints strings plainly.
+
+=item show @blah
+
+=item show_scalar $x
+
+Like C<warn>, but instead of returning the value from C<warn> it returns its
+arguments, so it can be used in the middle of an expression.
+
+Note that
+
+	my $x = show foo();
+
+will actually evaluaate C<foo> in list context, so if you only want to dump a
+single element and retain scalar context use
+
+	my $x = show_scalar foo();
+
+which has a prototype of C<$> (as opposed to taking a list).
+
+This is similar to Ingy's L<XXX> module.
+
+=item carp
+
+=item croak
+
+=item confess
+
+=item cluck
+
+Drop in replacements for L<Carp> exports, that format their arguments like
+C<warn>.
 
 =item dump @stuff
 

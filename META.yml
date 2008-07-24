@@ -1,14 +1,16 @@
 --- #YAML:1.0
 name:                Devel-PartialDump
-version:             0.02
+version:             0.03
 abstract:            ~
 license:             ~
 author:              ~
-generated_by:        ExtUtils::MakeMaker version 6.42
+generated_by:        ExtUtils::MakeMaker version 6.44
 distribution_type:   module
 requires:     
     Moose:                         0
+    namespace::clean:              0.08
     Scalar::Util:                  0
+    Sub::Exporter:                 0
     Test::use::ok:                 0
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html
