@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Devel-PartialDump
-version:             0.04
+version:             0.05
 abstract:            ~
 license:             ~
 author:              ~
@@ -12,6 +12,7 @@ requires:
     Scalar::Util:                  0
     Sub::Exporter:                 0
     Test::use::ok:                 0
+    Test::Warn:                    0
 meta-spec:
     url:     http://module-build.sourceforge.net/META-spec-v1.3.html
     version: 1.3
