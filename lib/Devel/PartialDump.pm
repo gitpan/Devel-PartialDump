@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
 package Devel::PartialDump;
-use Mouse qw(has meta); # no need for anything else
+use Mouse;
 
 use Carp ();
 use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.06";
+our $VERSION = "0.07";
 
 use Sub::Exporter -setup => {
 	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
@@ -112,6 +112,7 @@ sub warn {
 }
 
 foreach my $f ( qw(carp croak confess cluck) ) {
+	no warnings 'redefine';
 	eval "sub $f {
 		local \$Carp::CarpLevel = \$Carp::CarpLevel + 1;
 		Carp::$f(warn_str(\@_));
@@ -504,7 +505,7 @@ single element and retain scalar context use
 
 which has a prototype of C<$> (as opposed to taking a list).
 
-This is similar to Ingy's L<XXX> module.
+This is similar to the venerable Ingy's fabulous and amazing L<XXX> module.
 
 =item carp
 
