@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
 package Devel::PartialDump;
-use Mouse;
+use Any::Moose;
 
 use Carp ();
 use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.07";
+our $VERSION = "0.08";
 
 use Sub::Exporter -setup => {
 	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
