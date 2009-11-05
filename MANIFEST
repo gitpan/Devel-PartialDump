@@ -1,4 +1,3 @@
-.gitignore
 Changes
 lib/Devel/PartialDump.pm
 Makefile.PL
