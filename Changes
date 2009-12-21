@@ -1,5 +1,5 @@
 0.12
-    - Update example output in the docs with the JSON-like format
+	- no more Any::Moose
 
 0.11
 	- unbreak tests

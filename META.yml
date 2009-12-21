@@ -10,7 +10,7 @@ configure_requires:
 build_requires:
     ExtUtils::MakeMaker:  0
 requires:
-    Any::Moose:        0
+    Moose:             0
     namespace::clean:  0.08
     Scalar::Util:      0
     Sub::Exporter:     0
