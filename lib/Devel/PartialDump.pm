@@ -8,7 +8,7 @@ use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.12";
+our $VERSION = "0.13";
 
 use Sub::Exporter -setup => {
 	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
@@ -408,15 +408,15 @@ dependency.
 
 =item C<< "foo" => "bar" >>
 
-    foo => "bar"
+    foo: "bar"
 
 =item C<< foo => "bar", gorch => [ 1, "bah" ] >>
 
-    foo => "bar", gorch => [ 1, "bah" ]
+    foo: "bar", gorch: [ 1, "bah" ]
 
 =item C<< [ { foo => ["bar"] } ] >>
 
-    [ { foo => ARRAY(0x9b265d0) } ]
+    [ { foo: ARRAY(0x9b265d0) } ]
 
 =item C<< [ 1 .. 10 ] >>
 
@@ -625,7 +625,7 @@ Yuval Kogman E<lt>nothingmuch@woobling.orgE<gt>
 
 =head1 COPYRIGHT
 
-	Copyright (c) 2008 Yuval Kogman. All rights reserved
+	Copyright (c) 2008, 2009 Yuval Kogman. All rights reserved
 	This program is free software; you can redistribute
 	it and/or modify it under the same terms as Perl itself.
 
