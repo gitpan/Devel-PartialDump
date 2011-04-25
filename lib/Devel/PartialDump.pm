@@ -8,7 +8,7 @@ use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.13";
+our $VERSION = "0.14";
 
 use Sub::Exporter -setup => {
 	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
@@ -275,7 +275,9 @@ sub format_ref {
 		return overload::StrVal($ref);
 	} else {
 		my $reftype = reftype($ref);
-		my $method = "format_" . lc reftype $ref;
+                $reftype = 'SCALAR'
+                    if $reftype eq 'REF' || $reftype eq 'LVALUE';
+		my $method = "format_" . lc $reftype;
 
 		if ( $self->can($method) ) {
 			return $self->$method( $depth, $ref );
