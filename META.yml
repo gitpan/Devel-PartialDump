@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Devel-PartialDump
-version:            0.14
+version:            0.15
 abstract:           ~
 author:  []
 license:            unknown
@@ -11,7 +11,7 @@ build_requires:
     ExtUtils::MakeMaker:  0
 requires:
     Moose:             0
-    namespace::clean:  0.08
+    namespace::clean:  0.2
     Scalar::Util:      0
     Sub::Exporter:     0
     Test::use::ok:     0

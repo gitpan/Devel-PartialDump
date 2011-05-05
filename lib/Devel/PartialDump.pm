@@ -8,7 +8,7 @@ use Scalar::Util qw(looks_like_number reftype blessed);
 
 use namespace::clean -except => 'meta';
 
-our $VERSION = "0.14";
+our $VERSION = "0.15";
 
 use Sub::Exporter -setup => {
 	exports => [qw(dump warn show show_scalar croak carp confess cluck $default_dumper)],
@@ -619,7 +619,7 @@ has been reached.
 =head1 VERSION CONTROL
 
 This module is maintained using git. You can get the latest version from
-L<http://github.com/nothingmuch/devel-partialdump>.
+L<http://github.com/rafl/devel-partialdump>.
 
 =head1 AUTHOR
 
