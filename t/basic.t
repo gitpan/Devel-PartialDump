@@ -1,9 +1,7 @@
-#!/usr/bin/perl
-
 use strict;
 use warnings;
 
-use Test::More 'no_plan';
+use Test::More;
 
 use ok 'Devel::PartialDump';
 
@@ -27,3 +25,5 @@ my $foo = "foo";
 is( $d->dump(\substr($foo, 0)), '\\"foo"', "reference to lvalue");
 
 is( $d->dump(\\"foo"), '\\\\"foo"', "reference to reference" );
+
+done_testing;
