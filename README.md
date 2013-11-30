@@ -4,7 +4,7 @@ Devel::PartialDump - Partial dumping of data structures, optimized for argument 
 
 # VERSION
 
-version 0.16
+version 0.17
 
 # SYNOPSIS
 
@@ -93,7 +93,7 @@ dependency.
 - stringify
 
     Whether or not to let objects stringify themselves, instead of using
-    ["StrVal" in overload](http://search.cpan.org/perldoc?overload#StrVal) to avoid side effects.
+    ["StrVal" in overload](https://metacpan.org/pod/overload#StrVal) to avoid side effects.
 
     Defaults to false (no overloading).
 
@@ -108,7 +108,7 @@ dependency.
 
 All exports are optional, nothing is exported by default.
 
-This module uses [Sub::Exporter](http://search.cpan.org/perldoc?Sub::Exporter), so exports can be renamed, curried, etc.
+This module uses [Sub::Exporter](https://metacpan.org/pod/Sub::Exporter), so exports can be renamed, curried, etc.
 
 - warn
 - show
@@ -122,7 +122,7 @@ This module uses [Sub::Exporter](http://search.cpan.org/perldoc?Sub::Exporter), 
     See the various methods for behavior documentation.
 
     These methods will use `$Devel::PartialDump::default_dumper` as the invocant if the
-    first argument is not blessed and `isa` [Devel::PartialDump](http://search.cpan.org/perldoc?Devel::PartialDump), so they can be
+    first argument is not blessed and `isa` [Devel::PartialDump](https://metacpan.org/pod/Devel::PartialDump), so they can be
     used as functions too.
 
     Particularly `warn` can be used as a drop in replacement for the built in
@@ -168,14 +168,14 @@ This module uses [Sub::Exporter](http://search.cpan.org/perldoc?Sub::Exporter), 
 
     which has a prototype of `$` (as opposed to taking a list).
 
-    This is similar to the venerable Ingy's fabulous and amazing [XXX](http://search.cpan.org/perldoc?XXX) module.
+    This is similar to the venerable Ingy's fabulous and amazing [XXX](https://metacpan.org/pod/XXX) module.
 
 - carp
 - croak
 - confess
 - cluck
 
-    Drop in replacements for [Carp](http://search.cpan.org/perldoc?Carp) exports, that format their arguments like
+    Drop in replacements for [Carp](https://metacpan.org/pod/Carp) exports, that format their arguments like
     `warn`.
 
 - dump @stuff
@@ -235,3 +235,4 @@ the same terms as the Perl 5 programming language system itself.
 - Jesse Luehrs <doy@tozt.net>
 - Karen Etheridge <ether@cpan.org>
 - Leo Lapworth <web@web-teams-computer.local>
+- Steven Lee <stevenwh.lee@gmail.com>

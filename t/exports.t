@@ -1,8 +1,9 @@
 use strict;
-use warnings;
+use warnings FATAL => 'all';
 
 use Test::More;
-use Test::Warn;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
+use Test::Warn;  # for 'carped'
 
 {
     package Foo;

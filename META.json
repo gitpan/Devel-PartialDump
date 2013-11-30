@@ -29,7 +29,7 @@
       },
       "develop" : {
          "recommends" : {
-            "Dist::Zilla::PluginBundle::Author::ETHER" : "0.040"
+            "Dist::Zilla::PluginBundle::Author::ETHER" : "0.041"
          },
          "requires" : {
             "Dist::Zilla" : "5.006",
@@ -38,6 +38,7 @@
             "Dist::Zilla::Plugin::GithubMeta" : "0",
             "Dist::Zilla::Plugin::MakeMaker::Fallback" : "0",
             "Dist::Zilla::Plugin::ModuleBuildTiny" : "0.004",
+            "Dist::Zilla::Plugin::Prereqs" : "0",
             "Dist::Zilla::PluginBundle::Author::ETHER" : "0",
             "File::Spec" : "0",
             "IO::Handle" : "0",
@@ -48,7 +49,8 @@
             "Test::Kwalitee" : "1.12",
             "Test::More" : "0.94",
             "Test::NoTabs" : "0",
-            "Test::Pod" : "1.41"
+            "Test::Pod" : "1.41",
+            "Test::Warnings" : "0"
          }
       },
       "runtime" : {
@@ -75,14 +77,16 @@
             "List::Util" : "0",
             "Test::More" : "0",
             "Test::Warn" : "0",
-            "ok" : "0"
+            "if" : "0",
+            "ok" : "0",
+            "overload" : "0"
          }
       }
    },
    "provides" : {
       "Devel::PartialDump" : {
          "file" : "lib/Devel/PartialDump.pm",
-         "version" : "0.16"
+         "version" : "0.17"
       }
    },
    "release_status" : "stable",
@@ -98,10 +102,10 @@
          "web" : "https://github.com/karenetheridge/Devel-PartialDump"
       }
    },
-   "version" : "0.16",
+   "version" : "0.17",
    "x_Dist_Zilla" : {
       "perl" : {
-         "version" : "5.019005"
+         "version" : "5.019006"
       },
       "plugins" : [
          {
@@ -111,13 +115,41 @@
          },
          {
             "class" : "Dist::Zilla::Plugin::PromptIfStale",
+            "config" : {
+               "Dist::Zilla::Plugin::PromptIfStale" : {
+                  "check_all_plugins" : 0,
+                  "check_all_prereqs" : 0,
+                  "modules" : [
+                     "Dist::Zilla::PluginBundle::Author::ETHER"
+                  ],
+                  "phase" : "build",
+                  "skip" : []
+               }
+            },
             "name" : "@Author::ETHER/build",
-            "version" : "0.013"
+            "version" : "0.014"
          },
          {
             "class" : "Dist::Zilla::Plugin::PromptIfStale",
+            "config" : {
+               "Dist::Zilla::Plugin::PromptIfStale" : {
+                  "check_all_plugins" : "1",
+                  "check_all_prereqs" : "1",
+                  "modules" : [],
+                  "phase" : "release",
+                  "skip" : [
+                     "Dist::Zilla::Plugin::Git::Check",
+                     "Dist::Zilla::Plugin::Git::Commit",
+                     "Dist::Zilla::Plugin::Git::GatherDir",
+                     "Dist::Zilla::Plugin::Git::NextVersion",
+                     "Dist::Zilla::Plugin::Git::Push",
+                     "Dist::Zilla::Plugin::Git::Tag",
+                     "Dist::Zilla::Plugin::Git::Init"
+                  ]
+               }
+            },
             "name" : "@Author::ETHER/release",
-            "version" : "0.013"
+            "version" : "0.014"
          },
          {
             "class" : "Dist::Zilla::Plugin::ExecDir",
@@ -192,7 +224,7 @@
                }
             },
             "name" : "@Author::ETHER/Test::Compile",
-            "version" : "2.037"
+            "version" : "2.038"
          },
          {
             "class" : "Dist::Zilla::Plugin::Test::NoTabs",
@@ -269,6 +301,11 @@
             "class" : "Dist::Zilla::Plugin::Test::ReportPrereqs",
             "name" : "@Author::ETHER/Test::ReportPrereqs",
             "version" : "0.010"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Test::Portability",
+            "name" : "@Author::ETHER/Test::Portability",
+            "version" : "2.000005"
          },
          {
             "class" : "Dist::Zilla::Plugin::PruneCruft",
@@ -395,11 +432,6 @@
                         "version" : "1.008"
                      },
                      {
-                        "class" : "Pod::Weaver::Plugin::Encoding",
-                        "name" : "-Encoding",
-                        "version" : "0.02"
-                     },
-                     {
                         "class" : "Pod::Weaver::Section::Contributors",
                         "name" : "Contributors",
                         "version" : "0.006"
@@ -418,7 +450,7 @@
          {
             "class" : "Dist::Zilla::Plugin::ReadmeAnyFromPod",
             "name" : "@Author::ETHER/ReadmeAnyFromPod",
-            "version" : "0.133060"
+            "version" : "0.133290"
          },
          {
             "class" : "Dist::Zilla::Plugin::GithubMeta",
@@ -513,7 +545,7 @@
          {
             "class" : "Dist::Zilla::Plugin::InstallGuide",
             "name" : "@Author::ETHER/InstallGuide",
-            "version" : "1.200001"
+            "version" : "1.200002"
          },
          {
             "class" : "Dist::Zilla::Plugin::CheckSelfDependency",
@@ -612,6 +644,17 @@
             "version" : "5.006"
          },
          {
+            "class" : "Dist::Zilla::Plugin::Prereqs",
+            "config" : {
+               "Dist::Zilla::Plugin::Prereqs" : {
+                  "phase" : "develop",
+                  "type" : "requires"
+               }
+            },
+            "name" : "DevelopRequires",
+            "version" : "5.006"
+         },
+         {
             "class" : "Dist::Zilla::Plugin::ContributorsFromGit",
             "name" : "ContributorsFromGit",
             "version" : "0.006"
@@ -661,7 +704,8 @@
       "Florian Ragwitz <rafl@debian.org>",
       "Jesse Luehrs <doy@tozt.net>",
       "Karen Etheridge <ether@cpan.org>",
-      "Leo Lapworth <web@web-teams-computer.local>"
+      "Leo Lapworth <web@web-teams-computer.local>",
+      "Steven Lee <stevenwh.lee@gmail.com>"
    ]
 }
 

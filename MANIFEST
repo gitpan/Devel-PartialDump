@@ -14,6 +14,7 @@ lib/Devel/PartialDump.pm
 t/00-report-prereqs.t
 t/basic.t
 t/exports.t
+t/objects.t
 weaver.ini
 xt/author/00-compile.t
 xt/author/pod-spell.t
@@ -27,4 +28,5 @@ xt/release/mojibake.t
 xt/release/no-tabs.t
 xt/release/pod-no404s.t
 xt/release/pod-syntax.t
+xt/release/portability.t
 xt/release/test-version.t

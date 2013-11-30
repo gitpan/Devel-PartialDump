@@ -8,7 +8,9 @@ build_requires:
   List::Util: 0
   Test::More: 0
   Test::Warn: 0
+  if: 0
   ok: 0
+  overload: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
   Module::Build::Tiny: 0.030
@@ -27,7 +29,7 @@ no_index:
 provides:
   Devel::PartialDump:
     file: lib/Devel/PartialDump.pm
-    version: 0.16
+    version: 0.17
 requires:
   Carp: 0
   Carp::Heavy: 0
@@ -42,10 +44,10 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Devel-PartialDump
   homepage: https://github.com/karenetheridge/Devel-PartialDump
   repository: https://github.com/karenetheridge/Devel-PartialDump.git
-version: 0.16
+version: 0.17
 x_Dist_Zilla:
   perl:
-    version: 5.019005
+    version: 5.019006
   plugins:
     -
       class: Dist::Zilla::Plugin::Git::NextVersion
@@ -53,12 +55,34 @@ x_Dist_Zilla:
       version: 2.017
     -
       class: Dist::Zilla::Plugin::PromptIfStale
+      config:
+        Dist::Zilla::Plugin::PromptIfStale:
+          check_all_plugins: 0
+          check_all_prereqs: 0
+          modules:
+            - Dist::Zilla::PluginBundle::Author::ETHER
+          phase: build
+          skip: []
       name: '@Author::ETHER/build'
-      version: 0.013
+      version: 0.014
     -
       class: Dist::Zilla::Plugin::PromptIfStale
+      config:
+        Dist::Zilla::Plugin::PromptIfStale:
+          check_all_plugins: 1
+          check_all_prereqs: 1
+          modules: []
+          phase: release
+          skip:
+            - Dist::Zilla::Plugin::Git::Check
+            - Dist::Zilla::Plugin::Git::Commit
+            - Dist::Zilla::Plugin::Git::GatherDir
+            - Dist::Zilla::Plugin::Git::NextVersion
+            - Dist::Zilla::Plugin::Git::Push
+            - Dist::Zilla::Plugin::Git::Tag
+            - Dist::Zilla::Plugin::Git::Init
       name: '@Author::ETHER/release'
-      version: 0.013
+      version: 0.014
     -
       class: Dist::Zilla::Plugin::ExecDir
       name: '@Author::ETHER/ExecDir'
@@ -116,7 +140,7 @@ x_Dist_Zilla:
             - ':ExecFiles'
             - '@Author::ETHER/Examples'
       name: '@Author::ETHER/Test::Compile'
-      version: 2.037
+      version: 2.038
     -
       class: Dist::Zilla::Plugin::Test::NoTabs
       config:
@@ -176,6 +200,10 @@ x_Dist_Zilla:
       class: Dist::Zilla::Plugin::Test::ReportPrereqs
       name: '@Author::ETHER/Test::ReportPrereqs'
       version: 0.010
+    -
+      class: Dist::Zilla::Plugin::Test::Portability
+      name: '@Author::ETHER/Test::Portability'
+      version: 2.000005
     -
       class: Dist::Zilla::Plugin::PruneCruft
       name: '@Author::ETHER/PruneCruft'
@@ -277,10 +305,6 @@ x_Dist_Zilla:
               name: '-StopWords'
               version: 1.008
             -
-              class: Pod::Weaver::Plugin::Encoding
-              name: '-Encoding'
-              version: 0.02
-            -
               class: Pod::Weaver::Section::Contributors
               name: Contributors
               version: 0.006
@@ -293,7 +317,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::ReadmeAnyFromPod
       name: '@Author::ETHER/ReadmeAnyFromPod'
-      version: 0.133060
+      version: 0.133290
     -
       class: Dist::Zilla::Plugin::GithubMeta
       name: '@Author::ETHER/GithubMeta'
@@ -367,7 +391,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::InstallGuide
       name: '@Author::ETHER/InstallGuide'
-      version: 1.200001
+      version: 1.200002
     -
       class: Dist::Zilla::Plugin::CheckSelfDependency
       name: '@Author::ETHER/CheckSelfDependency'
@@ -445,6 +469,14 @@ x_Dist_Zilla:
       name: '@Author::ETHER/via_options'
       version: 5.006
     -
+      class: Dist::Zilla::Plugin::Prereqs
+      config:
+        Dist::Zilla::Plugin::Prereqs:
+          phase: develop
+          type: requires
+      name: DevelopRequires
+      version: 5.006
+    -
       class: Dist::Zilla::Plugin::ContributorsFromGit
       name: ContributorsFromGit
       version: 0.006
@@ -484,3 +516,4 @@ x_contributors:
   - 'Jesse Luehrs <doy@tozt.net>'
   - 'Karen Etheridge <ether@cpan.org>'
   - 'Leo Lapworth <web@web-teams-computer.local>'
+  - 'Steven Lee <stevenwh.lee@gmail.com>'

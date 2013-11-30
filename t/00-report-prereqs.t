@@ -25,8 +25,10 @@ my @modules = qw(
   Sub::Exporter
   Test::More
   Test::Warn
+  if
   namespace::clean
   ok
+  overload
   perl
   strict
   warnings

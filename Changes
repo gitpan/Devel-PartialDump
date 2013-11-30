@@ -1,5 +1,12 @@
 Revision history for Devel-PartialDump
 
+0.17      2013-11-30 20:47:47Z
+    - many fixes (thanks, Steven Lee!)
+      - attribute list_delim is now being used in list dumps
+      - setting attribute max_length to 0 now shortens more, to '...'
+      - fixed use of = in array/hash ref objects
+      - extra test coverage
+
 0.16      2013-11-24 00:43:48Z
     - Moose dependency removed, resolving circular dependency in Moose's
       recommended prereqs (thanks, David Golden!)

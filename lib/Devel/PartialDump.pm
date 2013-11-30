@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Devel::PartialDump;
 {
-  $Devel::PartialDump::VERSION = '0.16';
+  $Devel::PartialDump::VERSION = '0.17';
 }
-# git description: v0.15-14-g1affd47
+# git description: v0.16-10-g3303cfd
 
 BEGIN {
   $Devel::PartialDump::AUTHORITY = 'cpan:NUFFIN';
@@ -48,9 +48,9 @@ sub replacement_caller_info {
 
     package DB;
 {
-  $DB::VERSION = '0.16';
+  $DB::VERSION = '0.17';
 }
-# git description: v0.15-14-g1affd47
+# git description: v0.16-10-g3303cfd
 
 BEGIN {
   $DB::AUTHORITY = 'cpan:NUFFIN';
@@ -157,10 +157,10 @@ sub dump {
 
     my $dump = $self->$method(1, @args);
 
-    if ( defined $self->max_length ) {
-        if ( length($dump) > $self->max_length ) {
-            $dump = substr($dump, 0, $self->max_length - 3) . "...";
-        }
+    if ( defined $self->max_length and length($dump) > $self->max_length ) {
+        my $max_length = $self->max_length - 3;
+        $max_length = 0 if $max_length < 0;
+        substr( $dump, $max_length, length($dump) - $max_length ) = '...';
     }
 
     if ( not defined wantarray ) {
@@ -193,7 +193,7 @@ sub dump_as_pairs {
         @what = splice(@what, 0, $self->max_elements * 2 );
     }
 
-    return join($self->list_delim, $self->_dump_as_pairs($depth, @what), ($truncated ? "..." : ()) );
+    return join( $self->list_delim, $self->_dump_as_pairs($depth, @what), ($truncated ? "..." : ()) );
 }
 
 sub _dump_as_pairs {
@@ -218,7 +218,7 @@ sub dump_as_list {
         @what = splice(@what, 0, $self->max_elements );
     }
 
-    return join( ", ", ( map { $self->format($depth, $_) } @what ), ($truncated ? "..." : ()) );
+    return join( $self->list_delim, ( map { $self->format($depth, $_) } @what ), ($truncated ? "..." : ()) );
 }
 
 sub format {
@@ -263,6 +263,7 @@ sub format_array {
     my ( $self, $depth, $array ) = @_;
 
     my $class = blessed($array) || '';
+    $class .= "=" if $class;
 
     return $class . "[ " . $self->dump_as_list($depth + 1, @$array) . " ]";
 }
@@ -271,6 +272,7 @@ sub format_hash {
     my ( $self, $depth, $hash ) = @_;
 
     my $class = blessed($hash) || '';
+    $class .= "=" if $class;
 
     return $class . "{ " . $self->dump_as_pairs($depth + 1, map { $_ => $hash->{$_} } sort keys %$hash) . " }";
 }
@@ -331,8 +333,8 @@ __END__
 
 =encoding UTF-8
 
-=for :stopwords יובל קוג'מן (Yuval Kogman) David Golden Florian Ragwitz Jesse Luehrs Karen
-Etheridge Leo Lapworth autodetect Ingy
+=for :stopwords יובל קוג'מן (Yuval Kogman) David Steven Lee Golden Florian Ragwitz Jesse
+Luehrs Karen Etheridge Leo Lapworth autodetect Ingy
 
 =head1 NAME
 
@@ -340,7 +342,7 @@ Devel::PartialDump - Partial dumping of data structures, optimized for argument 
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 SYNOPSIS
 
@@ -630,6 +632,10 @@ Karen Etheridge <ether@cpan.org>
 =item *
 
 Leo Lapworth <web@web-teams-computer.local>
+
+=item *
+
+Steven Lee <stevenwh.lee@gmail.com>
 
 =back
 
